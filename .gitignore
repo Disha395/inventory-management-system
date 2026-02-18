@@ -1,0 +1,83 @@
+############################
+# Compiled class files
+############################
+*.class
+
+############################
+# Logs
+############################
+*.log
+logs/
+log/
+
+############################
+# Build directories
+############################
+target/
+build/
+out/
+
+############################
+# Maven
+############################
+.mvn/wrapper/maven-wrapper.jar
+
+############################
+# Gradle
+############################
+.gradle/
+build/
+
+############################
+# IDE files
+############################
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+############################
+# OS Generated files
+############################
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+############################
+# Application config (Optional)
+############################
+application-local.properties
+application-local.yml
+application-prod.properties
+application-prod.yml
+
+############################
+# Environment files
+############################
+.env
+
+############################
+# Flyway (if needed)
+############################
+flyway.conf
+
+############################
+# Node (if using frontend inside project)
+############################
+node_modules/
+
+############################
+# Test Coverage
+############################
+coverage/

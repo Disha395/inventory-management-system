@@ -39,8 +39,8 @@ public class Response {
     private ProductDto product;
     private List<ProductDto> products;
 
-    private TransactionDTO transaction;
-    private List<TransactionDTO> transactions;
+    private TransactionDto transaction;
+    private List<TransactionDto> transactions;
 
     private final LocalDateTime timestamp = LocalDateTime.now();
 

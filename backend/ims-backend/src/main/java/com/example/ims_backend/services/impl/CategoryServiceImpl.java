@@ -1,7 +1,6 @@
 package com.example.ims_backend.services.impl;
 
 import com.example.ims_backend.dto.CategoryDto;
-import com.example.ims_backend.dto.Response;
 import com.example.ims_backend.entity.Category;
 import com.example.ims_backend.exceptions.NotFoundException;
 import com.example.ims_backend.repository.CategoryRepository;
@@ -12,107 +11,78 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CategoryServiceImpl implements ICategoryService {
+
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
-
-    /**
-     * @param categoryDto
-     */
     @Override
-    public Response createCategory(CategoryDto categoryDto) {
-        Category categoryToSave = modelMapper.map(categoryDto, Category.class);
-        categoryRepository.save(categoryToSave);
+    public CategoryDto createCategory(CategoryDto categoryDto) {
 
-        return Response.builder().
-                status(200)
-                .message("Category saved Successfully")
-                .build();
+        Category category = modelMapper.map(categoryDto, Category.class);
 
+        Category savedCategory = categoryRepository.save(category);
+
+        log.info("Category created with ID: {}", savedCategory.getId());
+
+        return modelMapper.map(savedCategory, CategoryDto.class);
     }
 
-    /**
-     * @return
-     */
     @Override
-    public Response getAllCategories() {
-        List<Category> categories = categoryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    @Transactional(readOnly = true)
+    public List<CategoryDto> getAllCategories() {
 
-        categories.forEach(category -> category.setProducts(null));
+        List<Category> categories = categoryRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "id"));
 
-        List<CategoryDto> categoryDTOList = modelMapper.map(categories, new TypeToken<List<CategoryDto>>() {
-        }.getType());
-
-        return Response.builder()
-                .status(200)
-                .message("success")
-                .categories(categoryDTOList)
-                .build();
+        return modelMapper.map(
+                categories,
+                new TypeToken<List<CategoryDto>>() {}.getType()
+        );
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
-    public Response getCategoryById(Long id) {
+    @Transactional(readOnly = true)
+    public CategoryDto getCategoryById(Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category Not Found"));
+                .orElseThrow(() -> new NotFoundException("Category Not Found with id: " + id));
 
-        CategoryDto categoryDTO = modelMapper.map(category, CategoryDto.class);
-
-        return Response.builder()
-                .status(200)
-                .message("success")
-                .category(categoryDTO)
-                .build();
+        return modelMapper.map(category, CategoryDto.class);
     }
 
-    /**
-     * @param id
-     * @param categoryDto
-     * @return
-     */
     @Override
-    public Response updateCategory(Long id, CategoryDto categoryDto) {
+    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
 
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category Not Found"));
+                .orElseThrow(() -> new NotFoundException("Category Not Found with id: " + id));
 
-        existingCategory.setName(categoryDto.getName());
+        modelMapper.map(categoryDto, existingCategory);
 
-        categoryRepository.save(existingCategory);
+        Category updatedCategory = categoryRepository.save(existingCategory);
 
-        return Response.builder()
-                .status(200)
-                .message("Category Was Successfully Updated")
-                .build();
+        log.info("Category updated with ID: {}", updatedCategory.getId());
 
+        return modelMapper.map(updatedCategory, CategoryDto.class);
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
-    public Response deleteCategory(Long id) {
+    public void deleteCategory(Long id) {
 
-        categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category Not Found"));
+        if (!categoryRepository.existsById(id)) {
+            throw new NotFoundException("Category Not Found with id: " + id);
+        }
 
         categoryRepository.deleteById(id);
 
-        return Response.builder()
-                .status(200)
-                .message("Category Was Successfully Deleted")
-                .build();
+        log.info("Category deleted with ID: {}", id);
     }
 }

@@ -3,14 +3,16 @@ package com.example.ims_backend.services;
 import com.example.ims_backend.dto.CategoryDto;
 import com.example.ims_backend.dto.Response;
 
+import java.util.List;
+
 public interface ICategoryService {
-    Response createCategory(CategoryDto categoryDto);
+    CategoryDto createCategory(CategoryDto categoryDto);
 
-    Response getAllCategories();
+    List<CategoryDto> getAllCategories();
 
-    Response getCategoryById(Long id);
+    CategoryDto getCategoryById(Long id);
 
-    Response updateCategory(Long id, CategoryDto categoryDto);
+    CategoryDto updateCategory(Long id, CategoryDto categoryDto);
 
-    Response deleteCategory(Long id);
+    void deleteCategory(Long id);
 }

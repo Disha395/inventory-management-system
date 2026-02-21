@@ -2,20 +2,23 @@ package com.example.ims_backend.services;
 
 import com.example.ims_backend.dto.ProductDto;
 import com.example.ims_backend.dto.Response;
+import com.example.ims_backend.entity.Product;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface IProductService {
 
-    Response saveProduct(ProductDto productDto, MultipartFile imageFile);
+    ProductDto saveProduct(ProductDto productDto, MultipartFile imageFile);
 
-    Response updateProduct(ProductDto productDto, MultipartFile imageFile);
+    ProductDto updateProduct(ProductDto productDto, MultipartFile imageFile);
 
-    Response getAllProducts();
+    List<ProductDto> getAllProducts();
 
-    Response getProductById(Long id);
+    ProductDto getProductById(Long id);
 
-    Response deleteId(Long id);
+    void deleteId(Long id);
 
-    Response searchProduct(String input);
+    List<ProductDto> searchProduct(String input);
 
 }

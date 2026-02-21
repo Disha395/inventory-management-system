@@ -3,14 +3,16 @@ package com.example.ims_backend.services;
 import com.example.ims_backend.dto.Response;
 import com.example.ims_backend.dto.SupplierDto;
 
+import java.util.List;
+
 public interface ISupplierService {
-    Response addSupplier(SupplierDto supplierDto);
+    SupplierDto addSupplier(SupplierDto supplierDto);
 
-    Response updateSupplier(Long id, SupplierDto supplierDto);
+    SupplierDto updateSupplier(Long id, SupplierDto supplierDto);
 
-    Response getAllSupplier();
+    List<SupplierDto> getAllSuppliers();
 
-    Response getSupplierById(Long id);
+    SupplierDto getSupplierById(Long id);
 
-    Response deleteSupplier(Long id);
+    void deleteSupplier(Long id);
 }

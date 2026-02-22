@@ -16,9 +16,12 @@ import com.example.ims_backend.repository.SupplierRepository;
 import com.example.ims_backend.repository.TransactionRepository;
 import com.example.ims_backend.services.ITransactionService;
 import com.example.ims_backend.services.IUserService;
+import com.example.ims_backend.specification.TransactionFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -147,13 +152,13 @@ public class TransactionServiceImpl implements ITransactionService {
         Long supplierId = transactionRequest.getSupplierId();
         Integer quantity = transactionRequest.getQuantity();
 
-        if(supplierId == null) throw new NameValueRequiredException("Supplier Id is Required");
+        if (supplierId == null) throw new NameValueRequiredException("Supplier Id is Required");
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product Not Found with id : " + productId));
+                .orElseThrow(() -> new NotFoundException("Product Not Found"));
 
         Supplier supplier = supplierRepository.findById(supplierId)
-                .orElseThrow(() -> new NotFoundException("Supplier Not Found with id : " + supplierId));
+                .orElseThrow(() -> new NotFoundException("Supplier Not Found"));
 
         User user = userService.getCurrentLoggedInUser();
 
@@ -187,18 +192,55 @@ public class TransactionServiceImpl implements ITransactionService {
      */
     @Override
     public Response getAllTransactions(int page, int size, String filter) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return null;
+
+        //user the Transaction specification
+        Specification<Transaction> spec = TransactionFilter.byFilter(filter);
+        Page<Transaction> transactionPage = transactionRepository.findAll(spec, pageable);
+
+        List<TransactionDto> transactionDTOS = modelMapper.map(transactionPage.getContent(), new TypeToken<List<TransactionDto>>() {
+        }.getType());
+
+        transactionDTOS.forEach(transactionDTO -> {
+            transactionDTO.setUser(null);
+            transactionDTO.setProduct(null);
+            transactionDTO.setSupplier(null);
+        });
+
+        return Response.builder()
+                .status(200)
+                .message("success")
+                .transactions(transactionDTOS)
+                .totalElements(transactionPage.getTotalElements())
+                .totalPages(transactionPage.getTotalPages())
+                .build();
 
     }
 
     /**
-     * @param id
+     * @param month
+     * @param year
      * @return
      */
     @Override
-    public Response getAllTransactionById(Long id) {
-        return null;
+    public Response getAllTransactionById(int month , int year) {
+        List<Transaction> transactions = transactionRepository.findAll(TransactionFilter.byMonthAndYear(month, year));
+
+        List<TransactionDto> transactionDTOS = modelMapper.map(transactions, new TypeToken<List<TransactionDto>>() {
+        }.getType());
+
+        transactionDTOS.forEach(transactionDTO -> {
+            transactionDTO.setUser(null);
+            transactionDTO.setProduct(null);
+            transactionDTO.setSupplier(null);
+        });
+
+        return Response.builder()
+                .status(200)
+                .message("success")
+                .transactions(transactionDTOS)
+                .build();
     }
 
     /**
@@ -208,8 +250,22 @@ public class TransactionServiceImpl implements ITransactionService {
      */
     @Override
     public Response getAllTransactionByMonthAndYear(int month, int year) {
-        return null;
-    }
+        List<Transaction> transactions = transactionRepository.findAll(TransactionFilter.byMonthAndYear(month, year));
+
+        List<TransactionDto> transactionDTOS = modelMapper.map(transactions, new TypeToken<List<TransactionDto>>() {
+        }.getType());
+
+        transactionDTOS.forEach(transactionDTO -> {
+            transactionDTO.setUser(null);
+            transactionDTO.setProduct(null);
+            transactionDTO.setSupplier(null);
+        });
+
+        return Response.builder()
+                .status(200)
+                .message("success")
+                .transactions(transactionDTOS)
+                .build();    }
 
     /**
      * @param transactionId
@@ -218,6 +274,17 @@ public class TransactionServiceImpl implements ITransactionService {
      */
     @Override
     public Response updateTransactionStatus(Long transactionId, TransactionStatus status) {
-        return null;
+        Transaction existingTransaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new NotFoundException("Transaction Not Found"));
+
+        existingTransaction.setStatus(status);
+        existingTransaction.setUpdateAt(LocalDateTime.now());
+
+        transactionRepository.save(existingTransaction);
+
+        return Response.builder()
+                .status(200)
+                .message("Transaction Status Successfully Updated")
+                .build();
     }
 }

@@ -29,3 +29,6 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+secretJwtString: disha395123456789disha395123456789
+

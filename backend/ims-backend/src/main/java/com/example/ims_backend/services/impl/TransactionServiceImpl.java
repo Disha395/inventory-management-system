@@ -219,29 +219,26 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     /**
-     * @param month
-     * @param year
+     * @param id
      * @return
      */
     @Override
-    public Response getAllTransactionById(int month , int year) {
-        List<Transaction> transactions = transactionRepository.findAll(TransactionFilter.byMonthAndYear(month, year));
+    public Response getAllTransactionById(Long id) {
 
-        List<TransactionDto> transactionDTOS = modelMapper.map(transactions, new TypeToken<List<TransactionDto>>() {
-        }.getType());
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Transaction Not Found"));
 
-        transactionDTOS.forEach(transactionDTO -> {
-            transactionDTO.setUser(null);
-            transactionDTO.setProduct(null);
-            transactionDTO.setSupplier(null);
-        });
+        TransactionDto transactionDTO = modelMapper.map(transaction, TransactionDto.class);
+
+        transactionDTO.getUser().setTransactions(null);
 
         return Response.builder()
                 .status(200)
                 .message("success")
-                .transactions(transactionDTOS)
+                .transaction(transactionDTO)
                 .build();
     }
+
 
     /**
      * @param month

@@ -209,7 +209,7 @@ public class ProductServiceImpl implements IProductService {
      * @return
      */
     @Override
-    public void deleteId(Long id) {
+    public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product Not Found!"));
 

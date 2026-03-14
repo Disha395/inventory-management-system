@@ -22,7 +22,7 @@ public class ProductController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> createProduct(CreateProductRequest request) {
+    public ResponseEntity<Response> createProduct(@ModelAttribute CreateProductRequest request) {
 
         ProductDto productDto = new ProductDto();
         productDto.setName(request.getName());
@@ -86,7 +86,7 @@ public class ProductController {
      */
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> updateProduct(UpdateProductRequest request) {
+    public ResponseEntity<Response> updateProduct(@ModelAttribute UpdateProductRequest request) {
 
         ProductDto productDto = new ProductDto();
 
@@ -134,9 +134,9 @@ public class ProductController {
      */
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> searchProduct(@RequestParam String keyword) {
+    public ResponseEntity<Response> searchProduct(@RequestParam String searchValue) {
 
-        List<ProductDto> products = productService.searchProduct(keyword);
+        List<ProductDto> products = productService.searchProduct(searchValue);
 
         Response response = Response.builder()
                 .status(HttpStatus.OK.value())

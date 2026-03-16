@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import ApiService from "../services/ApiService";
+import ApiService from "../service/ApiService.js";
 
 export const ProtectedRoute = ({ element }) => {
     const location = useLocation();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
-import ApiService from "../services/ApiService";
-import Layout from "../components/Layout";
+import ApiService from "../service/ApiService";
+import Layout from "../component/Layout";
 
 const AddEditProductPage = () => {
 
